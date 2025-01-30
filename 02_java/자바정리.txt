@@ -1,0 +1,126 @@
+한글 포함된 자바 소스파일 컴파일 시 참고
+  javac 파일이름.java -encoding utf-8
+
+eclipse 한글 설정 windows->preference-> 
+<< encoding: UTF-8 >>
+* General - Workspace
+* General - Editors - Text Editors - spelling
+
+클래스명은 파일명과 동일하게 작성
+프로그램 실행시 main 메소드 안 문장들 순차적 실행
+자바에서 모든 코드는 반드시 클래스 안에 존재해야 하며 서로 관련된 코드들을 그룹으로 나누어 별도의 클래스를 구성 클래스들이 모여
+
+main : 프로그램 실행시 java.exe에 의해 호출됨
+하나의 java애플리케이션에는 main메서드를 포함한 클래스가 반드시 하나는 있어야함
+
+class 자성예
+	package member.mode.x;     // 패키지 선언
+	import java.util.Date;           // 임포트 선언 
+	public class Member {         // 클래스 작성부
+	   private String name;        // 필드(멤버변수)
+	   public Member() {}          // 생성자
+	   public String getName() {} // 메서드(멤버)
+	}
+
+변수의 선언
+   boolean : 1바이트 (* 자바에서는 내부적으로 int로 처리된다고함*)
+   char : 2 바이트
+변수의 범위
+   char 0~65535     '\u0000' : 2byte
+   byte -128~127               : 1byte
+
+문자열 + 처리 연산 처리
+  숫자 + 문자 => 다 문자로 인식
+  문자 + 숫자 => 다 문자로 인식
+
+
+변수 명명 규칙
+  1. 대소문자구분및 길이제한 없음
+  2. 예약어 불가
+  3. 수자로 시작 불가
+  4. _, $ 사용가능
+  5. 처시작글자는 소문자로 시작 여러 단어 이름의 첫 글자를 대문자로 한다.
+
+String name = "최진용";
+char gender = 'M';
+
+상수 : 한번만 저장할 수 있는 메모리 의미
+대문자로 작성하고, 단어 사이는 _ 로 구분
+final int AGE;  선언과 동시에 초기화, 선언 후 초기화
+
+final String BIRTH = "19691106";
+
+Scanner 사용자로부터 입력되는 정수, 실수, 문자열을 처리하는 클래스
+  import java.util.Scanner;
+  Scanner sc = new Scanner (System.in);
+  키보드 입력 값 받기
+  정수 : sc.nextInt();
+  실수 : sc.nextFloat(); sc.netDouble();
+  문자열 : sc.next(); sc.nextLine();
+  
+자동 형변환
+  컴파일러가 자동으로 값의 범위가 작은 자료형을 값의 범위가 큰 자료형으로 변환
+     byte -> short -> int -> long -> float -> double
+                char
+   (단, byte와 short 자료형 값의 계산 결과는 무조건 int로 처리한다.)
+
+변수와 메모리 구조
+   static예약어로 선정된 필드
+   메소드가 저장되는 공간
+   클래스 변수
+
+   new연산자에 의해 동적으로
+   할당하고 저장되는
+   
+System.out.println()
+  출력메소드
+    %d: 정수형, %o: 8진수, %x: 16진수
+    %c: 문자, %s: 문자열
+    %f: 실수(소수점 아래 6자리), %e: 지수형태표현, %g:대입 값 그대로
+  정렬방법
+    %5d : 5칸 확보하고 오른쪽 정렬
+    %-5d: 5칸을 확보하고 왼쪽 정렬
+    %.2f : 소수점 아래 2자리까지만 표시
+  escape 문자
+     특수문자 문자리터럴
+        tab       \t
+     new line    \n
+     역슬래시   \\
+
+float fNum = 0.0f;  // 0.0; 만 쓰면 오류 발생
+정수형 기본자료형 int
+실수형 기본자료형 double
+
+// 가독성을 위차 상수 할당 표시 아래는 999999999; 와 동일
+int sample = 999_999_999;
+
+증감연산자(단항연산자)
+  전위연산: 먼저 연산 후 다른 연산 실행
+  후위연산: 다른 연산 우선 실행 후 연산
+
+비교연산자 : 기본형 boolean 참조형을 제외하고 나머지 자료형에 모두 사용 가능
+
+.nextLine() //=> \n 나올때까지 입력
+그외 .next(), nextInt(), .... // 공백 나올때까지 입력
+
+제어문
+  switch문 : 동등비교
+  break 없는 case 조건은 switch 내에서 case 조건부터 break만나기 전까지 수행	
+  switch (n)
+  {
+     case 1:
+     case 2:
+        ....
+     default: 
+  }
+
+  switch (rps) {  // rps: 변수/식이 올수 있음 => 정수,문자,문자열
+    case 0: 가위; break;
+    case 1: 바위; break;
+    case 2: 보; break;
+    default: 알수없음
+  }
+
+case 0,1,2,3: 은 java jdk 14버전 이상부터 지원
+
+문자열 동등 비교는 == 대신  method equals를 써야 한다.
