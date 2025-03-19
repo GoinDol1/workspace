@@ -1,0 +1,104 @@
+<Navigator Explorer>
+이클립스 최신 버전의 경우 Navigator Explorer가 없으므로 deprecate됨 아래처럼 하면 기존 classes가 보임
+Building off of nitind and osoblanco's suggestions: You can make Project Explorer look exactly like the deprecated Navigator view by the following steps:
+Click Window->Show View->Project Explorer
+Click the three vertical dots in the top right corner of the Project Explorer Pane.
+Click "Filters and Customization..."
+In the "Pre-set filters" tab, uncheck "Java output folders" (thanks osoblanco for this tip)
+In the "Content" tab, uncheck "Java Elements"
+I didn't see any difference between Flat or Hierarchical in the Project presentation, so I left it as the default. I'm using Eclipse IDE for Java Developers version 2020-09. All of my projects use the default package, so I don't really need to see "Java Elements".
+from: https://stackoverflow.com/a/65941171/510222
+
+default output folder
+   src/main/webapp/WEB-INF/classes
+web context root 
+   1_servlet   // url경로
+   2_jsp        // url경로 
+context directory
+   src/main/webapp    // 배포경로
+Generate web.xml deployment descirptor 체크 // 체크 없으면 톰캣 디폴트 설정으로 수행됨 web.xml 생성됨
+
+web.xml 파일
+: 현재 프로젝트(웹 어플리케이션)을 구동시키는 서버(톰캣) 시작시 제일 먼저 읽어지는 파일
+: 배포 서술자 (DD, Deployment Descriptor)라고 하여 웹 어플리케이션의 기본적인 설정을 작성
+태그 Welcom-file-list : url로 접근 시 루트 경로에서 보여지는 첫 페이지(메인페이지)를 지정하는 설정
+        - 루트 경로 => http://현재구동중인서버IP주소:포트번호/어플리케이션루트명/
+          http://localhost:8888/1_servlet
+        - 파일 위치 : Content Directory 설정 경로 (src/main/webapp)
+
+서블릿 : 웹 서비스를 위한 자바 클래스
+=> 사용자의 요청을 받아 처리하고 그에 해당하는 응답페이지를 만들어 다시 사용자에게 전송하는 역할 (Controller 역할) <br>
+=> 웹에서 동적인 페이지를 자바로 구현할 수 있게 도와주는 역할 (Java로 HTML 구현)
+<a href="요청한url주소"></a>
+* 상대 경로 : 현재 페이지의 url주소에서 마지막 / 뒤에 요청한 url 주소를 덧붙여서 요청(찾게됨) 
+	=> localhost:8888/1_servlet/요청한url주소
+              <a href="views/requestTest.html"></a> 
+	=> localhost:8888/1_servlet/views/requestTest.html
+* 절대 경로 : 요청한 주소를 / 부터 작성 (/ : 루트 경로)
+      => 톰캣서버IP주소:포트번호 뒤에 요청주소를 덧붙여서 요청 (찾게됨)
+      ex) /views/requestTest.html 로요청
+          => localhost:8888/view/requestTest.html 요청하게됨
+서블릿에게 요청 시 반드시 context root 뒤에 작성되어야 함
+ex) http://localhost:8888/1_servlet/test.do
+- 현재 페이지의 경우 url 주소가 아래와 같을 때,   http://localhost:8888/1_servlet/views/requestTest.GET.html
+  + 상대 경로로 test.do 요청 시
+     1_servlet/views/test.do 같이 요청이 되었음!
+  + 따라서, 절대 경로로 Context root를 포함하여 요청해야 함
+     /1_servlet/test.do 요청!
+
+doGet ()
+   protected void doGet(HttpServletRequest request,   // 요청시 전달된 내용들이 담겨져 있음 
+                                 HttpServletResponse response // 효청에 대한 처리 후 응답할 때 사용할 객체 
+                                ) throws ServletException, IOException {
+	요청시 전달된 데이터 추출 (request 객체의 parameter 영역 안에 데이터가 담겨져 있음)
+              request.getParameter("키값"):String -> 키값에 해당하는 데이트를 반환
+        Ex) String userName = request.getParameter("userName");
+             System.out.println("이름 : " + userName); // 콘솔상 표시
+
+        같은 키값으로 전달된 여러 개의 데이트를 추출
+        => request.getParameterValues("키값"):String[] 
+        String[] f = request.getParameterValues("food");
+   }
+doPost => doGet을 호출하므로 doGet만 사용하는곳도 있음
+doPost에서 한글 깨짐   request.setCharacterEncoding("UTF-8");
+   response.setContentType("text/html;charset:UTF-8");
+   response.setCharacterEncoding("UTF-8");
+
+doPost에서 한글 문제시 Apache 한글 설정
+  추가적으로 Apache Tomcat의 UTF-8 설정 방법을 살펴보자. Eclipse를 보면   Servers 파일에 사용하는 서버들이 존재한다. 이때 원하는 서버의 파일에 들어가서 server.xml의 <Connector> 태그를 수정해주면 된다.
+   // 기본 설정
+   <Connector connectionTimeout="20000" port="8080" protocol="HTTP/1.1" redirectPort="8443"/> 
+   // 변경 (URIEncoding="UTF-8" 추가)
+   <Connector URIEncoding="UTF-8" connectionTimeout="20000" port="8080" protocol="HTTP/1.1" redirectPort="8443"/>
+
+순수 서블릿 방식 : Java 코드 내에서 HTML 을 작성
+JSP(Java Server Page) 방식 : HTML 내에 Java 코드 작성
+// 응답 페이지에서 필요한 데이터를 전달
+//  --> 전달하는 공간 : request 객체의 attribute라는 공간 사용 (key, value)
+     request.setAttribute("name", name);
+     RequestDispatcher view = request.getRequestDispatcher("views/responsePage.jsp"); 
+     view.forward(request, response);     // jsp페이지로
+
+    <%-- 자바 코드 작성하기 --%>
+    <%
+        // System.out.println("Hi~ JSP!?");
+        // 스크립틀릿 (Scriptlet) : HTML 내에서 Java코드를 작성할 수 있는 영역
+    %>
+    음식 : <%= if (foods == null)  %>
+           <li><%= f %></li>
+         <%  else  %>         
+         <ol>
+         <% for (String f : foods)  %>
+            <li><%= f %></li>
+         </ol>   
+
+
+
+
+
+
+
+
+
+
+
